@@ -1,6 +1,5 @@
-package com.mhd_07.bloodsugar.ui.theme
+package com.mhd_07.bloodsugar.presentation.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

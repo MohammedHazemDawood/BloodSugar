@@ -1,4 +1,4 @@
-package com.mhd_07.bloodsugar.ui.theme
+package com.mhd_07.bloodsugar.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
