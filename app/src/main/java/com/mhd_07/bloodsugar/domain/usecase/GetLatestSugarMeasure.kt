@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetLatestSugarMeasure(private val repo: SugarMeasuresRepo) {
-    fun invoke(userId: Int): Flow<SugarMeasure?> =
-        repo.getLatestSugarMeasures(userId).map { it.firstOrNull()?.toSugarMeasure() }
+    operator fun invoke(): Flow<SugarMeasure?> =
+        repo.getLatestSugarMeasures().map { it.firstOrNull()?.toSugarMeasure() }
 }

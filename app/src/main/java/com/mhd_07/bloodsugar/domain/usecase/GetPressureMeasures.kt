@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetPressureMeasures(private val repo: PressureMeasuresRepo) {
-    fun invoke(): Flow<List<PressureMeasure>> =
+    operator fun invoke(): Flow<List<PressureMeasure>> =
         repo.getCurrentUserPressureMeasures().map { list -> list.map { it.toPressureMeasure() } }
 }

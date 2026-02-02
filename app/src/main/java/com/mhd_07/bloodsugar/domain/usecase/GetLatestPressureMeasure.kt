@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetLatestPressureMeasure(private val repo: PressureMeasuresRepo) {
-    fun invoke(userId: Int): Flow<PressureMeasure?> =
-        repo.getLatestPressureMeasures(userId).map { it.firstOrNull()?.toPressureMeasure() }
+    operator fun invoke(): Flow<PressureMeasure?> =
+        repo.getLatestPressureMeasures().map { it.firstOrNull()?.toPressureMeasure() }
 }

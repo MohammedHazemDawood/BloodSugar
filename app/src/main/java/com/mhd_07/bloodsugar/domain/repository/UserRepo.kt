@@ -8,4 +8,6 @@ interface UserRepo {
     suspend fun deleteUserById(id: Int)
     fun getAllUsers(): Flow<List<UserEntity>>
     fun getUserById(id: Int): Flow<UserEntity>
+
+    val currentUser: Flow<UserEntity?>
 }

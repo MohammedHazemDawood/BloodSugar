@@ -21,4 +21,11 @@ val useCasesModule = module {
     factory { UpsertHealthIndicator(get()) }
     factory { GetLatestSugarMeasure(get()) }
     factory { GetLatestPressureMeasure(get()) }
+    factory { SearchSugarMeasure(get()) }
+    factory { SearchPressureMeasures(get()) }
+    factory { Login(get()) }
+    factory { GetSelectedUser(get()) }
+    factory { UserUseCases(get(), get(), get(), get(), get()) }
+    factory { SugarMeasureUseCases(get(), get(), get(), get(), get()) }
+    factory { PressureMeasureUseCases(get(), get(), get(), get(), get()) }
 }

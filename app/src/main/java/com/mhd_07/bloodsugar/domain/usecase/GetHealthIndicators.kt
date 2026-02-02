@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetHealthIndicators(private val repo: HealthIndicatorsRepo) {
-    fun invoke(): Flow<List<HealthIndicator>> =
+    operator fun invoke(): Flow<List<HealthIndicator>> =
         repo.getCurrentUserHealthIndicators().map { list -> list.map { it.toHealthIndicator() } }
 
 }

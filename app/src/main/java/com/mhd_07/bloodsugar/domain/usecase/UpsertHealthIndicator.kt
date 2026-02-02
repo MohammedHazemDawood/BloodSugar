@@ -5,7 +5,7 @@ import com.mhd_07.bloodsugar.domain.model.HealthIndicator
 import com.mhd_07.bloodsugar.domain.repository.HealthIndicatorsRepo
 
 class UpsertHealthIndicator(private val repo : HealthIndicatorsRepo) {
-    suspend fun invoke(healthIndicator: HealthIndicator) {
+    suspend operator fun invoke(healthIndicator: HealthIndicator) {
         repo.upsertHealthIndicator(healthIndicator.toEntity())
     }
 }

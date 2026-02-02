@@ -5,7 +5,7 @@ import com.mhd_07.bloodsugar.domain.model.PressureMeasure
 import com.mhd_07.bloodsugar.domain.repository.PressureMeasuresRepo
 
 class UpsertPressureMeasure(private val repo: PressureMeasuresRepo) {
-    suspend fun invoke(pressureMeasure: PressureMeasure) {
+    suspend operator fun invoke(pressureMeasure: PressureMeasure) {
         repo.upsertPressureMeasure(pressureMeasure.toEntity())
     }
 }

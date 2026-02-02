@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetSugarMeasures(private val repo: SugarMeasuresRepo) {
-    fun invoke(): Flow<List<SugarMeasure>> =
+    operator fun invoke(): Flow<List<SugarMeasure>> =
         repo.getCurrentUserSugarMeasures().map { list -> list.map { it.toSugarMeasure() } }
 }

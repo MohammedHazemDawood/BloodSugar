@@ -5,7 +5,7 @@ import com.mhd_07.bloodsugar.domain.model.SugarMeasure
 import com.mhd_07.bloodsugar.domain.repository.SugarMeasuresRepo
 
 class UpsertSugarMeasure(private val repo: SugarMeasuresRepo) {
-    suspend fun invoke(sugarMeasure: SugarMeasure){
+    suspend operator fun invoke(sugarMeasure: SugarMeasure){
         repo.upsertSugarMeasure(sugarMeasure.toEntity())
     }
 }
