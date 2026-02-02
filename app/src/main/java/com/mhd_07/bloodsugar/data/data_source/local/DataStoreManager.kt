@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class UserManger(private val dataStore: DataStore<Preferences>) {
+class DataStoreManager(private val dataStore: DataStore<Preferences>) {
     private val userIdKey = intPreferencesKey("user_id")
 
     suspend fun setUserId(userId: Int) {

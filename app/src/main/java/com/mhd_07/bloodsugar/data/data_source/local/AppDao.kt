@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface AppDao {
 
     @Upsert
-    suspend fun upsertUser(user: UserEntity)
+    suspend fun upsertUser(user: UserEntity) : Int
 
     @Upsert
     suspend fun upsertSugarMeasure(sugarMeasure: SugarMeasureEntity)
@@ -36,6 +36,9 @@ interface AppDao {
 
     @Query("SELECT * FROM health_indicators WHERE userId = :userId")
     fun getAllHealthIndicators(userId: Int): Flow<List<HealthIndicatorsEntity>>
+
+    @Query("SELECT * FROM health_indicators WHERE id = :id")
+    fun getHealthIndicatorById(id: Int): Flow<HealthIndicatorsEntity>
 
     @Query("SELECT * FROM sugar_measures WHERE id = :id")
     fun getSugarMeasureById(id: Int): Flow<SugarMeasureEntity>
