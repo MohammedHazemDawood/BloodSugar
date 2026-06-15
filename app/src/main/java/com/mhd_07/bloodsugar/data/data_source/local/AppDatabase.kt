@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.mhd_07.bloodsugar.data.model.*
 
 @Database(
-    entities = [UserEntity::class, SugarMeasureEntity::class, PressureMeasureEntity::class, HealthIndicatorsEntity::class],
+    entities = [UserEntity::class, SugarMeasureEntity::class, HealthIndicatorsEntity::class],
     version = 1,
     exportSchema = false
 )

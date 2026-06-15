@@ -2,17 +2,13 @@ package com.mhd_07.bloodsugar.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mhd_07.bloodsugar.domain.model.PressureMeasure
 import com.mhd_07.bloodsugar.domain.model.SugarMeasure
 import com.mhd_07.bloodsugar.domain.usecase.DeleteHealthIndicator
 import com.mhd_07.bloodsugar.domain.usecase.GetHealthIndicators
-import com.mhd_07.bloodsugar.domain.usecase.PressureMeasureUseCases
 import com.mhd_07.bloodsugar.domain.usecase.SugarMeasureUseCases
 import com.mhd_07.bloodsugar.domain.usecase.UpsertHealthIndicator
 import com.mhd_07.bloodsugar.domain.usecase.UserUseCases
-import com.mhd_07.bloodsugar.presentation.model.PressureMeasuresData
 import com.mhd_07.bloodsugar.presentation.model.SearchState
-import com.mhd_07.bloodsugar.presentation.model.SearchType
 import com.mhd_07.bloodsugar.presentation.model.SugarMeasuresData
 import com.mhd_07.bloodsugar.presentation.model.UIIntents
 import com.mhd_07.bloodsugar.presentation.model.UIState
@@ -27,7 +23,6 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     private val userUseCases: UserUseCases,
     private val sugarMeasureUseCases: SugarMeasureUseCases,
-    private val pressureMeasureUseCases: PressureMeasureUseCases,
     private val getHealthIndicators: GetHealthIndicators,
     private val deleteHealthIndicator: DeleteHealthIndicator,
     private val upsertHealthIndicator: UpsertHealthIndicator,
@@ -37,15 +32,13 @@ class MainViewModel(
     private val _isSearching = MutableStateFlow(false)
     private val _searchQuery = MutableStateFlow("")
     private val _dateRange = MutableStateFlow(Pair(0L, 0L))
-    private val _searchType = MutableStateFlow(SearchType.SUGAR)
 
     private val _searchState = combine(
         _searchQuery,
         _dateRange,
-        _searchType,
         _isSearching
-    ) { query, dateRange, type, isSearching ->
-        SearchState(query, dateRange, type, isSearching)
+    ) { query, dateRange, isSearching ->
+        SearchState(query, dateRange, isSearching)
     }
 
     //Sugar
@@ -54,12 +47,11 @@ class MainViewModel(
         _isSearching,
         _searchQuery,
         _dateRange,
-        _searchType
-    ) { isSearching, query, dateRange, type ->
-        Triple(isSearching, query, dateRange) to type
-    }.flatMapLatest { (searchData, type) ->
+    ) { isSearching, query, dateRange ->
+        Triple(isSearching, query, dateRange)
+    }.flatMapLatest { searchData ->
         val (isSearching, query, dateRange) = searchData
-        if (isSearching && type == SearchType.SUGAR)
+        if (isSearching)
             sugarMeasureUseCases.searchSugarMeasure(query, dateRange)
         else
             sugarMeasureUseCases.getSugarMeasures()
@@ -80,42 +72,7 @@ class MainViewModel(
             SugarMeasuresData()
         )
 
-    //Pressures
-    private val _selectedPressureMeasure = MutableStateFlow<PressureMeasure?>(null)
-    private val _pressureMeasures = combine(
-        _isSearching,
-        _searchQuery,
-        _dateRange,
-        _searchType
-    ) { isSearching, query, dateRange, type ->
-        Triple(isSearching, query, dateRange) to type
-    }.flatMapLatest { (searchData, type) ->
-        val (isSearching, query, dateRange) = searchData
-        if (isSearching && type == SearchType.PRESSURE)
-            pressureMeasureUseCases.searchPressureMeasures(query, dateRange)
-        else
-            pressureMeasureUseCases.getPressureMeasures()
-    }
-    private val _latestPressureMeasureFlow = pressureMeasureUseCases.getLatestPressureMeasure().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        null
-    )
-    private val _pressureMeasuresData = combine(
-        _pressureMeasures,
-        _latestPressureMeasureFlow,
-        _selectedPressureMeasure
-    ) { list, latest, selected ->
-        PressureMeasuresData(list, latest, selected)
-    }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            PressureMeasuresData()
-        )
-
-
-    private val _healthIndicators = 
+    private val _healthIndicators =
         getHealthIndicators().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
 
@@ -134,21 +91,17 @@ class MainViewModel(
     val uiState = combine(
         _userState,
         _sugarMeasuresData,
-        _pressureMeasuresData,
         _healthIndicators,
         _searchState
-    ) { (users, selectedUser), sugarMeasuresData, pressureMeasuresData, healthIndicators, searchState ->
+    ) { (users, selectedUser), sugarMeasuresData, healthIndicators, searchState ->
         UIState(
             users = users,
             sugarMeasures = sugarMeasuresData.sugarMeasures,
-            pressureMeasures = pressureMeasuresData.pressureMeasures,
             healthIndicators = healthIndicators,
             selectedUser = selectedUser,
             latestSugarMeasure = sugarMeasuresData.latestSugarMeasure,
-            latestPressureMeasure = pressureMeasuresData.latestPressureMeasure,
             searchQuery = searchState.searchQuery,
             dateRange = searchState.dateRange,
-            searchType = searchState.searchType,
             isSearching = searchState.isSearching,
         )
     }.stateIn(
@@ -171,16 +124,8 @@ class MainViewModel(
                 userUseCases.deleteUser(event.id)
             }
 
-            is UIIntents.DeletePressureMeasure -> viewModelScope.launch(Dispatchers.IO) {
-                pressureMeasureUseCases.deletePressureMeasure(event.id)
-            }
-
             is UIIntents.UpsertHealthIndicator -> viewModelScope.launch(Dispatchers.IO) {
                 upsertHealthIndicator(event.healthIndicator)
-            }
-
-            is UIIntents.UpsertPressureMeasure -> viewModelScope.launch(Dispatchers.IO) {
-                pressureMeasureUseCases.upsertPressureMeasure(event.pressureMeasure)
             }
 
             is UIIntents.UpsertSugarMeasure -> viewModelScope.launch(Dispatchers.IO) {
@@ -189,10 +134,6 @@ class MainViewModel(
 
             is UIIntents.UpsertUser -> viewModelScope.launch(Dispatchers.IO) {
                 userUseCases.upsertUser(event.user)
-            }
-
-            is UIIntents.SelectPressureMeasure -> {
-                _selectedPressureMeasure.value = event.measure
             }
 
             is UIIntents.SelectSugarMeasure -> {

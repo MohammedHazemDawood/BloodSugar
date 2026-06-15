@@ -5,5 +5,5 @@ data class UserUseCases(
     val deleteUser: DeleteUser,
     val upsertUser: UpsertUser,
     val getSelectedUser: GetSelectedUser,
-    val login: Login,
+    val login: LoginUseCase,
 )
